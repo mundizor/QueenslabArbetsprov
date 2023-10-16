@@ -9,12 +9,12 @@ public class PriceCheckContext : DbContext
 
     public string DbPath { get; }
 
-    public PriceCheckContext()
+    public PriceCheckContext(string dbpath_)
     {
         //var folder = Environment.SpecialFolder.LocalApplicationData;
         //var path = Environment.GetFolderPath(folder);
         //DbPath = System.IO.Path.Join(path, "pricecheck.db");
-        DbPath = System.IO.Path.GetFullPath(@"..\..\..\..\") + "pricecheck.db"; //hacky solution to get db path. should have initialized data in ef instead.
+        DbPath = System.IO.Path.GetFullPath(dbpath_) + "pricecheck.db"; //hacky solution to get db path. should have initialized data in ef instead.
     }
 
     // The following configures EF to create a Sqlite database file in the

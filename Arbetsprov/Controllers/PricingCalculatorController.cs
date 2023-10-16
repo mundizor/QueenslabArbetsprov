@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -24,15 +25,34 @@ namespace Arbetsprov.Controllers
             };
         }
 
+
+
+        public PricingCalculatorController(string dbpath_)
+        {
+            dbpath = dbpath_;
+        }
+
+        [ActivatorUtilitiesConstructor]
+        public PricingCalculatorController()
+        {
+            dbpath = @"..\";
+        }
+
+        private string dbpath ;
+
         [HttpGet]
         public float GetCustomerCost(int CustomerId, DateTime startDate, DateTime EndDate)
         {
-            using var db = new PriceCheckContext();
+
+            using var db = new PriceCheckContext(dbpath);
             float costSum = 0;
 
             var customer = db.Users.Include(x => x.ActiveServicesTimes).Include(x=>x.DiscountDaysPeriods).Include(x => x.FreeDaysPeriods).Include(x => x.PriceOverrides)
                 .Where(x => x.UserId == CustomerId)
                 .FirstOrDefault();
+
+            if (customer == null)
+                return 0;
 
             //for every service available we check if the user has any active period in that service.
             foreach (Service service in Enum.GetValues(typeof(Service)))
